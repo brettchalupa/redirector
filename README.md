@@ -146,8 +146,8 @@ redirector/
 deno publish
 ```
 
-The package name is configured in `deno.json` as `@brettchalupa/redirector`. Update the
-scope to your JSR scope before publishing.
+The package name is configured in `deno.json` as `@brettchalupa/redirector`.
+Update the scope to your JSR scope before publishing.
 
 ## Requirements
 
