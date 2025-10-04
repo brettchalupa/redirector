@@ -1,0 +1,19 @@
+# Redirector Configuration
+# The destination domain for default redirects
+destination: example.com
+
+# Redirect status code: 301 (permanent) or 307 (temporary)
+# Default: 307
+redirectStatus: 307
+
+# Custom path redirects
+# These override the default domain replacement
+# Each redirect can optionally override the status code
+redirects:
+  - from: /biz
+    to: /baz
+  - from: /old-page
+    to: /new-page
+    status: 301
+  - from: /blog
+    to: https://blog.example.com
