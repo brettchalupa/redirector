@@ -2,6 +2,7 @@
   "name": "@scope/redirector",
   "version": "0.1.0",
   "exports": "./mod.ts",
+  "license": "MIT",
   "tasks": {
     "dev": "deno run -P --watch main.ts",
     "start": "deno run main.ts",
@@ -22,11 +23,6 @@
     }
   },
   "publish": {
-    "exclude": [
-      ".github/",
-      ".claude/",
-      "config.yaml",
-      "CLAUDE.md"
-    ]
+    "exclude": [".github/", ".claude/", "config.yaml", "CLAUDE.md"]
   }
 }
