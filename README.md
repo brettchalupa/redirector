@@ -14,17 +14,20 @@ A simple, configurable URL redirector library for Deno Deploy and edge runtimes.
 
 ## Installation
 
+Published on [JSR](https://jsr.io/@brettchalupa/redirector):
+`@brettchalupa/redirector`
+
 ### Use as a Library
 
 ```ts
-import { runRedirector } from "@brettchalupa/redirector";
+import { runRedirector } from "jsr:@brettchalupa/redirector";
 
 // Run with default config.yaml
 await runRedirector();
 ```
 
 ```ts
-import { type Config, runRedirector } from "@brettchalupa/redirector";
+import { type Config, runRedirector } from "jsr:@brettchalupa/redirector";
 
 // Run with inline config
 const config: Config = {
@@ -37,7 +40,7 @@ await runRedirector({ config });
 ```
 
 ```ts
-import { createHandler, loadConfig } from "@brettchalupa/redirector";
+import { createHandler, loadConfig } from "jsr:@brettchalupa/redirector";
 
 // Use as a handler with your own server
 const config = await loadConfig("./config.yaml");
@@ -140,14 +143,16 @@ redirector/
 
 ## Publishing to JSR
 
+Package is published at
+[@brettchalupa/redirector](https://jsr.io/@brettchalupa/redirector).
+
+To publish a new version:
+
 ```bash
 # Update version in deno.json
 # Then publish
 deno publish
 ```
-
-The package name is configured in `deno.json` as `@brettchalupa/redirector`.
-Update the scope to your JSR scope before publishing.
 
 ## Requirements
 
