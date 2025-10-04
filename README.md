@@ -10,7 +10,7 @@ A simple, configurable URL redirector library for Deno Deploy and edge runtimes.
 - 🔒 Permanent (301) or temporary (307) redirects
 - ⚙️ YAML-based or inline configuration
 - 🧪 Comprehensive test suite
-- 🌐 Deploy to Deno Deploy with automatic CI/CD
+- 🌐 Deploy to Deno Deploy easily
 
 ## Installation
 
