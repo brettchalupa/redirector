@@ -3,7 +3,7 @@
  *
  * @example
  * ```ts
- * import { runRedirector } from "@scope/redirector";
+ * import { runRedirector } from "jsr:@brettchalupa/redirector";
  *
  * // Run with default config.yaml
  * await runRedirector();
@@ -11,7 +11,7 @@
  *
  * @example
  * ```ts
- * import { runRedirector } from "@scope/redirector";
+ * import { runRedirector } from "jsr:@brettchalupa/redirector";
  *
  * // Run with custom config path
  * await runRedirector({ configPath: "./my-config.yaml" });
@@ -19,7 +19,7 @@
  *
  * @example
  * ```ts
- * import { runRedirector, type Config } from "@scope/redirector";
+ * import { type Config, runRedirector } from "jsr:@brettchalupa/redirector";
  *
  * // Run with inline config
  * const config: Config = {
@@ -35,7 +35,7 @@
  *
  * @example
  * ```ts
- * import { createHandler, loadConfig } from "@scope/redirector";
+ * import { createHandler, loadConfig } from "jsr:@brettchalupa/redirector";
  *
  * // Use as a handler with your own server
  * const config = await loadConfig("./config.yaml");
