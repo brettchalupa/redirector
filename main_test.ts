@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
-import { getRedirectInfo, handler, loadConfig } from "./main.ts";
-import type { Config } from "./main.ts";
+import { createHandler, getRedirectInfo, loadConfig } from "./lib.ts";
+import type { Config } from "./lib.ts";
 
 Deno.test("loadConfig - loads valid configuration", async () => {
   const config = await loadConfig("./config.yaml");
@@ -126,49 +126,53 @@ Deno.test("getRedirectInfo - custom redirect uses global status when not overrid
   assertEquals(result.status, 301);
 });
 
-Deno.test("handler - returns 307 redirect response", () => {
+Deno.test("createHandler - returns 307 redirect response", () => {
   const config: Config = {
     destination: "bar.com",
   };
+  const handler = createHandler(config);
   const request = new Request("http://foo.com/example");
-  const response = handler(request, config);
+  const response = handler(request);
 
   assertEquals(response.status, 307);
   assertEquals(response.headers.get("Location"), "https://bar.com/example");
 });
 
-Deno.test("handler - handles custom redirects", () => {
+Deno.test("createHandler - handles custom redirects", () => {
   const config: Config = {
     destination: "bar.com",
     redirects: [
       { from: "/biz", to: "/baz" },
     ],
   };
+  const handler = createHandler(config);
   const request = new Request("http://foo.com/biz");
-  const response = handler(request, config);
+  const response = handler(request);
 
   assertEquals(response.status, 307);
   assertEquals(response.headers.get("Location"), "https://bar.com/baz");
 });
 
-Deno.test("handler - uses configured redirect status", () => {
+Deno.test("createHandler - uses configured redirect status", () => {
   const config: Config = {
     destination: "bar.com",
     redirectStatus: 301,
   };
+  const handler = createHandler(config);
   const request = new Request("http://foo.com/example");
-  const response = handler(request, config);
+  const response = handler(request);
 
   assertEquals(response.status, 301);
   assertEquals(response.headers.get("Location"), "https://bar.com/example");
 });
 
-Deno.test("handler - defaults to 307 when redirectStatus not specified", () => {
+Deno.test("createHandler - defaults to 307 when redirectStatus not specified", () => {
   const config: Config = {
     destination: "bar.com",
   };
+  const handler = createHandler(config);
   const request = new Request("http://foo.com/example");
-  const response = handler(request, config);
+  const response = handler(request);
 
   assertEquals(response.status, 307);
 });

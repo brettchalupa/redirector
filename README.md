@@ -1,17 +1,57 @@
 # Redirector
 
-A simple, configurable URL redirector built for Deno Deploy and edge runtimes.
+A simple, configurable URL redirector library for Deno Deploy and edge runtimes.
 
 ## Features
 
+- 📦 Library-first design - use as a package or standalone server
 - 🚀 Simple domain-based redirects (e.g., `foo.com/example` → `bar.com/example`)
 - 🎯 Custom path redirects with override support
 - 🔒 Permanent (301) or temporary (307) redirects
-- ⚙️ YAML-based configuration
+- ⚙️ YAML-based or inline configuration
 - 🧪 Comprehensive test suite
 - 🌐 Deploy to Deno Deploy with automatic CI/CD
 
-## Quick Start
+## Installation
+
+### Use as a Library
+
+```ts
+import { runRedirector } from "@brettchalupa/redirector";
+
+// Run with default config.yaml
+await runRedirector();
+```
+
+```ts
+import { type Config, runRedirector } from "@brettchalupa/redirector";
+
+// Run with inline config
+const config: Config = {
+  destination: "example.com",
+  redirectStatus: 307,
+  redirects: [{ from: "/old", to: "/new", status: 301 }],
+};
+
+await runRedirector({ config });
+```
+
+```ts
+import { createHandler, loadConfig } from "@brettchalupa/redirector";
+
+// Use as a handler with your own server
+const config = await loadConfig("./config.yaml");
+const handler = createHandler(config);
+
+Deno.serve(handler);
+```
+
+### Use as a Template
+
+1. Fork or use this repository as a template
+2. Connect your repository to [Deno Deploy](https://deno.com/deploy)
+3. Configure `config.yaml` with your redirects
+4. Push to main - automatic deployment handled by Deno Deploy
 
 ### Local Development
 
@@ -24,13 +64,6 @@ cd redirector
 # Run the server
 deno task dev
 ```
-
-### Deploy to Deno Deploy
-
-1. Fork or use this repository as a template
-2. Connect your repository to [Deno Deploy](https://deno.com/deploy)
-3. Configure `config.yaml` with your redirects
-4. Push to main - automatic deployment handled by Deno Deploy
 
 ## Configuration
 
@@ -93,14 +126,28 @@ deno task lint
 
 ```
 redirector/
-├── main.ts           # Main server logic
-├── main_test.ts      # Test suite
-├── config.yaml       # Redirect configuration
-├── deno.json         # Deno project config
+├── mod.ts            # Library exports
+├── lib.ts            # Core library logic
+├── lib_test.ts       # Library tests
+├── main.ts           # CLI entry point
+├── main_test.ts      # Integration tests
+├── config.yaml       # Example configuration
+├── deno.json         # Project & JSR config
 └── .github/
     └── workflows/
         └── ci.yml    # CI checks (fmt, lint, test)
 ```
+
+## Publishing to JSR
+
+```bash
+# Update version in deno.json
+# Then publish
+deno publish
+```
+
+The package name is configured in `deno.json` as `@brettchalupa/redirector`. Update the
+scope to your JSR scope before publishing.
 
 ## Requirements
 

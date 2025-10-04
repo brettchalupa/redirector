@@ -1,8 +1,11 @@
 {
+  "name": "@scope/redirector",
+  "version": "0.1.0",
+  "exports": "./mod.ts",
   "tasks": {
     "dev": "deno run -P --watch main.ts",
     "start": "deno run main.ts",
-    "test": "deno test --allow-read --allow-write",
+    "test": "deno test --allow-read --allow-write --allow-net",
     "check": "deno check **/*.ts",
     "fmt": "deno fmt",
     "lint": "deno lint",
@@ -17,5 +20,13 @@
       "read": ["./config.yaml"],
       "net": true
     }
+  },
+  "publish": {
+    "exclude": [
+      ".github/",
+      ".claude/",
+      "config.yaml",
+      "CLAUDE.md"
+    ]
   }
 }
