@@ -19,7 +19,8 @@
   "permissions": {
     "default": {
       "read": ["./config.yaml"],
-      "net": true
+      "net": true,
+      "env": ["PORT"]
     }
   },
   "publish": {
