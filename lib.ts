@@ -135,7 +135,7 @@ export interface RunRedirectorOptions {
   configPath?: string;
   /** Inline configuration object (takes precedence over configPath) */
   config?: Config;
-  /** Port to listen on */
+  /** Port to listen on. Defaults to PORT env var if set, otherwise 8008 */
   port?: number;
   /** Hostname to bind to */
   hostname?: string;
@@ -148,25 +148,37 @@ export interface RunRedirectorOptions {
 /**
  * Runs the redirector HTTP server.
  *
+ * The server will listen on:
+ * 1. The `port` option if provided
+ * 2. The `PORT` environment variable if set
+ * 3. Port 8008 as the default
+ *
  * @param options - Configuration options for the server
  * @returns Promise that resolves to the Deno HTTP server instance
  *
  * @example
  * ```ts
- * // Run with default config.yaml
+ * // Run with default config.yaml on port 8008 (or PORT env var)
  * await runRedirector();
  * ```
  *
  * @example
  * ```ts
- * // Run with inline config
+ * // Run with inline config on a custom port
  * await runRedirector({
  *   config: {
  *     destination: "example.com",
  *     redirects: [{ from: "/old", to: "/new", status: 301 }]
  *   },
- *   port: 8000
+ *   port: 3000
  * });
+ * ```
+ *
+ * @example
+ * ```ts
+ * // PORT environment variable takes precedence over default
+ * // $ PORT=9000 deno run main.ts
+ * await runRedirector(); // Will listen on port 9000
  * ```
  */
 export async function runRedirector(
@@ -184,8 +196,12 @@ export async function runRedirector(
   const config = providedConfig ?? await loadConfig(configPath);
   const handler = createHandler(config);
 
+  // Determine port: explicit option > PORT env var > 8008 default
+  const serverPort = port ??
+    (Deno.env.get("PORT") ? parseInt(Deno.env.get("PORT")!, 10) : 8008);
+
   return Deno.serve({
-    port,
+    port: serverPort,
     hostname,
     signal,
     onListen,

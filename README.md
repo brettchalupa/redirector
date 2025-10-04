@@ -64,11 +64,24 @@ git clone <your-repo-url>
 cd redirector
 
 # Configure your redirects in config.yaml
-# Run the server
+# Run the server (defaults to port 8008)
 deno task dev
+
+# Or specify a custom port
+PORT=3000 deno task dev
 ```
 
 ## Configuration
+
+### Port Configuration
+
+The server listens on port 8008 by default. You can customize this:
+
+1. Set the `PORT` environment variable: `PORT=3000 deno task dev`
+2. Pass the `port` option to `runRedirector({ port: 3000 })`
+3. Let it use the default: 8008
+
+### Redirect Configuration
 
 Edit `config.yaml` to configure your redirects:
 
