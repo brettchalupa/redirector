@@ -14,13 +14,14 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
+    "@std/log": "jsr:@std/log@0.224",
     "@std/yaml": "jsr:@std/yaml@1"
   },
   "permissions": {
     "default": {
       "read": ["./config.yaml"],
       "net": true,
-      "env": ["PORT"]
+      "env": ["PORT", "LOG_LEVEL"]
     }
   },
   "publish": {

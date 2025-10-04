@@ -45,6 +45,28 @@ deno task check-all  # Run all checks (check, test, lint, fmt --check)
 - `deno.json` - Project config with tasks, imports, and permissions
 - `.github/workflows/ci.yml` - CI that runs checks on push/PR
 
+## Documentation Standards
+
+### IMPORTANT: mod.ts Documentation
+
+The `mod.ts` file contains the JSDoc documentation that powers the JSR package
+page at https://jsr.io/@brettchalupa/redirector. **This documentation MUST be
+kept up to date with all features and changes.**
+
+When making changes:
+
+1. Update function/interface JSDoc in `lib.ts`
+2. **ALWAYS update the module-level examples in `mod.ts`** to reflect:
+   - New features or options
+   - Changed defaults
+   - New configuration methods
+   - Environment variable support
+3. Verify examples are accurate and complete
+4. Run `deno task check-all` to ensure code examples type-check
+
+The mod.ts examples are the first thing users see on JSR - they must be
+comprehensive and current.
+
 ## Key Implementation Details
 
 ### Configuration Hierarchy

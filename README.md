@@ -81,6 +81,33 @@ The server listens on port 8008 by default. You can customize this:
 2. Pass the `port` option to `runRedirector({ port: 3000 })`
 3. Let it use the default: 8008
 
+### Logging Configuration
+
+The server uses structured logging with configurable levels. Log level defaults
+to `INFO`. Available levels: `DEBUG`, `INFO`, `WARN`, `ERROR`, `CRITICAL`.
+
+Configure logging:
+
+1. Set the `LOG_LEVEL` environment variable: `LOG_LEVEL=DEBUG deno task dev`
+2. Pass the `logLevel` option to `runRedirector({ logLevel: "DEBUG" })`
+3. Let it use the default: `INFO`
+
+**Log output:**
+
+- `INFO`: Server startup, configuration loaded, listening address
+- `DEBUG`: All of the above + every request with redirect details
+- `WARN`/`ERROR`/`CRITICAL`: Errors and critical issues
+
+**Example:**
+
+```bash
+# Debug mode shows all requests
+LOG_LEVEL=DEBUG deno task dev
+
+# Quiet mode shows only warnings and errors
+LOG_LEVEL=WARN deno task dev
+```
+
 ### Redirect Configuration
 
 Edit `config.yaml` to configure your redirects:

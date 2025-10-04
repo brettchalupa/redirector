@@ -1,4 +1,5 @@
 import { parse } from "@std/yaml";
+import * as log from "@std/log";
 
 /**
  * A custom redirect rule that maps a source path to a destination path.
@@ -128,6 +129,11 @@ export function createHandler(config: Config): (req: Request) => Response {
 }
 
 /**
+ * Log level for the redirector.
+ */
+export type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR" | "CRITICAL";
+
+/**
  * Options for running the redirector server.
  */
 export interface RunRedirectorOptions {
@@ -143,6 +149,8 @@ export interface RunRedirectorOptions {
   signal?: AbortSignal;
   /** Callback invoked when the server starts listening */
   onListen?: (params: { hostname: string; port: number }) => void;
+  /** Log level. Defaults to LOG_LEVEL env var if set, otherwise "INFO" */
+  logLevel?: LogLevel;
 }
 
 /**
@@ -152,6 +160,11 @@ export interface RunRedirectorOptions {
  * 1. The `port` option if provided
  * 2. The `PORT` environment variable if set
  * 3. Port 8008 as the default
+ *
+ * Logging level is determined by:
+ * 1. The `logLevel` option if provided
+ * 2. The `LOG_LEVEL` environment variable if set
+ * 3. "INFO" as the default
  *
  * @param options - Configuration options for the server
  * @returns Promise that resolves to the Deno HTTP server instance
@@ -164,21 +177,22 @@ export interface RunRedirectorOptions {
  *
  * @example
  * ```ts
- * // Run with inline config on a custom port
+ * // Run with inline config on a custom port with DEBUG logging
  * await runRedirector({
  *   config: {
  *     destination: "example.com",
  *     redirects: [{ from: "/old", to: "/new", status: 301 }]
  *   },
- *   port: 3000
+ *   port: 3000,
+ *   logLevel: "DEBUG"
  * });
  * ```
  *
  * @example
  * ```ts
- * // PORT environment variable takes precedence over default
- * // $ PORT=9000 deno run main.ts
- * await runRedirector(); // Will listen on port 9000
+ * // Environment variables take precedence over defaults
+ * // $ PORT=9000 LOG_LEVEL=WARN deno run main.ts
+ * await runRedirector(); // Will listen on port 9000 with WARN level logging
  * ```
  */
 export async function runRedirector(
@@ -191,19 +205,67 @@ export async function runRedirector(
     hostname,
     signal,
     onListen,
+    logLevel,
   } = options;
 
+  // Determine log level: explicit option > LOG_LEVEL env var > INFO default
+  const level = logLevel ??
+    (Deno.env.get("LOG_LEVEL") as LogLevel | undefined) ?? "INFO";
+
+  // Setup logger
+  await log.setup({
+    handlers: {
+      console: new log.ConsoleHandler(level, {
+        formatter: (logRecord) => {
+          const { datetime, levelName, msg, args } = logRecord;
+          const timestamp = datetime.toISOString();
+          const argsStr = args.length > 0 ? ` ${JSON.stringify(args)}` : "";
+          return `${timestamp} [${levelName}] ${msg}${argsStr}`;
+        },
+      }),
+    },
+    loggers: {
+      default: {
+        level,
+        handlers: ["console"],
+      },
+    },
+  });
+
+  const logger = log.getLogger();
+
   const config = providedConfig ?? await loadConfig(configPath);
-  const handler = createHandler(config);
+  logger.info(`Loaded configuration with destination: ${config.destination}`);
 
   // Determine port: explicit option > PORT env var > 8008 default
   const serverPort = port ??
     (Deno.env.get("PORT") ? parseInt(Deno.env.get("PORT")!, 10) : 8008);
 
+  const handler = (req: Request): Response => {
+    const url = new URL(req.url);
+    const redirect = getRedirectInfo(url, config);
+
+    logger.debug(
+      `Request: ${req.method} ${url.pathname}${url.search} -> ${redirect.url} (${redirect.status})`,
+    );
+
+    return new Response(null, {
+      status: redirect.status,
+      headers: {
+        "Location": redirect.url,
+      },
+    });
+  };
+
+  logger.info(`Starting server on port ${serverPort} with log level ${level}`);
+
   return Deno.serve({
     port: serverPort,
     hostname,
     signal,
-    onListen,
+    onListen: (addr) => {
+      logger.info(`Server listening on http://${addr.hostname}:${addr.port}/`);
+      onListen?.(addr);
+    },
   }, handler);
 }
